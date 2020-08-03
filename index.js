@@ -2,6 +2,14 @@ const { create, decryptMedia } = require('@open-wa/wa-automate')
 const fs = require('fs-extra')
 const moment = require('moment')
 const tiktok = require('./lib/tiktok')
+const {artinama,
+    bijak,
+    weton,
+    corona,
+    alay,
+    namaninjaku,
+    liriklagu,
+    quotemaker} = require('./lib/functions')
 
 const serverOption = {
     headless: true,
@@ -50,7 +58,21 @@ async function msgHandler (client, message) {
         const { id, pushname } = sender
         const { name } = chat
         const time = moment(t * 1000).format('DD/MM HH:mm:ss')
-        const commands = ['#menu','#help','#sticker', '#stiker', '#tiktok']
+        const commands = [
+            '#menu',
+            '#help',
+            '#stiker',
+            '#sticker',
+            '#bijak',
+            '#tiktok',
+            '#artinama',
+            '#weton',
+            '#corona',
+            '#alay',
+            '#namaninjaku',
+            '#quotemaker',
+            '#liriklagu'
+        ]
         const cmds = commands.map(x => x + '\\b').join('|')
         const cmd = type === 'chat' ? body.match(new RegExp(cmds, 'gi')) : type === 'image' && caption ? caption.match(new RegExp(cmds, 'gi')) : ''
 
@@ -62,7 +84,20 @@ async function msgHandler (client, message) {
             switch (cmd[0]) {
                 case '#menu':
                 case '#help':
-                    client.sendText(from, 'Menu: \n1. #sticker / #stiker: kirim gambar dengan caption atau balas gambar yang sudah dikirim. \n2. #sticker / #stiker spasi url gambar (contoh: #stiker https://avatars2.githubusercontent.com/u/24309806) \n3. #tiktok spasi url (contoh: #tiktok https://www.tiktok.com/@yogaGanteng/video/685521...)')
+                    client.sendText(from, '😂❕ *WHATSAPP ROBOT* ❕😂\n' +
+                    '\nFeatures:\n\n' +
+                    '1. *#menu | #help* => Tampilkan semua fitur\n\n' +
+                    '2. *#conora* => Tampilkan data corona terbaru di Indonesia\n\n' +
+                    '3. *#bijak* => Tampilkan kata bijak\n\n' +
+                    '4. *#liriklagu lathi* => Tampilkan lirik lagu *Lathi*\n\n'+
+                    '5. *#artinama Daphinokio* => Tampilkan arti nama dari *Daphinokio*\n\n' +
+                    '6. *#weton 06 08 1995* => Tampilkan weton dan watak (tgl bulan tahun)\n\n' +
+                    '7. *#alay Daphinokio* => Tampilkan kalimat alay dari *Daphinokio*\n\n' +
+                    '8. *#quotemaker seseorang-bebas-memilih-jalan-ninjanya Daphino rain* => Tampilkan gambar quotes (pisahkan dengan -) dengan nama *Daphino* dan gambar tema *Hujan*\n\n' +
+                    '9. *#namaninjaku Daphinokio* => Tampilkan nama ninja terkeren dari *Daphinokio*\n\n' +
+                    '10. *#stiker url-gambar* => Tampilkan stiker dengan url yang kamu masukkan\n\n' +
+                    '11. *#stiker* => Tampilkan stiker dengan gambar yang kamu kirimkan dengan caption #stiker\n\n' +
+                    '12. *#tiktok url-video* => Download video tiktok dengan url yang kamu berikan\n\n**BOT akan terus di update')
                     break
                 case '#sticker':
                 case '#stiker':
@@ -100,6 +135,60 @@ async function msgHandler (client, message) {
                         }
                     }
                     break
+                case '#bijak':
+                    const getBijak = await bijak()
+                    client.sendText(from, getBijak);
+                    break;
+                case '#corona':
+                    const result = await corona()
+                    client.sendText(from, corona);
+                    break;
+                case '#artinama':
+                    if (args.length == 2) {
+                        const nama = args[1]
+                        const result = await artinama(nama)
+                        client.sendText(from, result)
+                    }
+                    break;
+                case '#liriklagu':
+                    if (args.length == 2){
+                        const lagu = args[1]
+                        const result = await liriklagu(lagu)
+                        client.sendText(from, result)
+                    }
+                    break;
+                case '#weton':
+                    if (args.length == 4) {
+                        const tgl = args[1]
+                        const bln = args[2]
+                        const thn = args[3]
+                        const result = await weton(tgl, bln, thn)
+                        client.sendText(from, result)
+                    }
+                    break;
+                case '#alay':
+                    if (args.length == 2) {
+                        const kata = args[1]
+                        const result = await alay(kata)
+                        client.sendText(from, result)
+                    }
+                    break;
+                case '#namaninjaku':
+                    if (args.length == 2) {
+                        const nama = args[1]
+                        const result = await namaninjaku(nama)
+                        client.sendText(from, result)
+                    }
+                    break;
+                case '#quotemaker':
+                    if (args.length == 4) {
+                        const quotes = args[1]
+                        const author = args[2]
+                        const theme = args[3]
+                        const result = await quotemaker(quotes, author, theme)
+                        client.sendFile(from, result, 'quotesmaker.jpg','Quotes Maker')
+                    }
+                    break;
             }
         } else {
             if (!isGroupMsg) console.log('[RECV]', color(time, 'yellow'), 'Message from', color(pushname))
